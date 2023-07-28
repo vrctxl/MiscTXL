@@ -15,7 +15,12 @@
   },
   "legacyFolders": {
   	"Assets\\Texel\\General": "81f95970275325444934d9b5af7257dc",
-  	"Assets\\Texel\\Editor\\Misc": "687c3981dc8a8e440b2f42e3950982c7"
+  	"Assets\\Texel\\Editor\\Misc": "687c3981dc8a8e440b2f42e3950982c7",
+  	"Assets\\Texel\\Common": "4b7c604a04100044fa7a6bc20b864417",
+  	"Assets\\Texel\\Editor\\Common\\Zone": "02b21299875c99746bb1cb275d975b0f"
   },
-  "legacyFiles": {}
+  "legacyFiles": {
+  	"Assets\\Texel\\Editor\\Common\\EditorTools.cs": "bf2c707af7283de498e934204c342c06",
+  	"Assets\\Texel\\Video\\Textures\\UI\\ui_atlas.png": "a1d53f153b56ac4ca4eaa6ba39a8ee4"
+  }
 }
