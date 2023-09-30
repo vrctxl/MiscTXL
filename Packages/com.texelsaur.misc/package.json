@@ -6,11 +6,10 @@
   	"email": "",
   	"url": "https://texelsaurus.com"
   },
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Collection of assorted useful scripts including toggles, triggers, language management, material management.",
   "gitDependencies": {},
   "vpmDependencies": {
-    "com.vrchat.udonsharp": "^1.1.8",
 	"com.texelsaur.common": "^1.0.0"
   },
   "legacyFolders": {
