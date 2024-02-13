@@ -12,34 +12,37 @@ namespace Texel
     {
         [Header("Access Control")]
         [Tooltip("Optional.  Enables default-on states for local user only if they have access via the referenced ACL at world load.")]
-        public AccessControl accessControl;
+        [SerializeField] internal AccessControl accessControl;
         [Tooltip("Optional.  Enables default-on states when an ACL updates to give local user access that they did not have at world load.")]
-        public bool initOnAccessUpadte = true;
+        [SerializeField] internal bool initOnAccessUpadte = true;
         [Tooltip("Optional.  Disables the ability to toggle group to 'on' state if local user does not have access via the referenced ACL.")]
-        public bool enforceOnToggle = true;
+        [SerializeField] internal bool enforceOnToggle = true;
 
         [Header("Default State")]
-        public bool defaultVR = true;
-        public bool defaultDesktop = true;
-        public bool defaultQuest = true;
+        [SerializeField] internal bool defaultVR = true;
+        [SerializeField] internal bool defaultDesktop = true;
+        [SerializeField] internal bool defaultQuest = true;
 
         [Header("Objects")]
-        public GameObject[] onStateObjects;
-        public GameObject[] offStateObjects;
+        [SerializeField] internal GameObject[] onStateObjects;
+        [SerializeField] internal GameObject[] offStateObjects;
 
         [Header("Toggle Attributes")]
-        public bool toggleGameObject = true;
-        public bool toggleColliders = false;
-        public bool toggleRenderers = false;
+        [SerializeField] internal bool toggleGameObject = true;
+        [SerializeField] internal bool toggleColliders = false;
+        [SerializeField] internal bool toggleRenderers = false;
 
-        bool state = false;
-        bool inDefault = false;
+        [Header("Options")]
+        [SerializeField] internal bool searchChildren = false;
 
-        Collider[] onColliders;
-        Collider[] offColliders;
+        private bool state = false;
+        private bool inDefault = false;
 
-        MeshRenderer[] onRenderers;
-        MeshRenderer[] offRenderers;
+        private Collider[] onColliders;
+        private Collider[] offColliders;
+
+        private MeshRenderer[] onRenderers;
+        private MeshRenderer[] offRenderers;
 
         public const int EVENT_TOGGLED = 0;
         const int EVENT_COUNT = 1;
@@ -107,26 +110,44 @@ namespace Texel
 
         Collider[] _BuildColliderList(GameObject[] objects)
         {
+            Collider[][] colliderLists = new Collider[objects.Length][];
             int count = 0;
-            Collider[][] clist = new Collider[objects.Length][];
+
             for (int i = 0; i < objects.Length; i++)
             {
                 GameObject obj = objects[i];
-                if (Utilities.IsValid(obj))
-                    clist[i] = obj.GetComponentsInChildren<Collider>();
-                else
-                    clist[i] = new Collider[0];
+                if (!obj)
+                    continue;
 
-                count += clist[i].Length;
+                if (searchChildren)
+                {
+                    colliderLists[i] = obj.GetComponentsInChildren<Collider>(true);
+                    count += colliderLists[i].Length;
+                    continue;
+                }
+
+                Collider collider = obj.GetComponent<Collider>();
+                if (collider)
+                {
+                    colliderLists[i] = new Collider[1];
+                    colliderLists[i][0] = collider;
+                    count += 1;
+                }
             }
 
             int index = 0;
             Collider[] colliders = new Collider[count];
-            for (int i = 0; i < clist.Length; i++)
+            for (int i = 0; i < colliderLists.Length; i++)
             {
-                Collider[] sublist = clist[i];
-                Array.Copy(sublist, 0, colliders, index, sublist.Length);
-                index += sublist.Length;
+                Collider[] list = colliderLists[i];
+                if (list == null)
+                    continue;
+
+                for (int j = 0; j < list.Length; j++)
+                {
+                    colliders[index] = list[j];
+                    index += 1;
+                }
             }
 
             return colliders;
@@ -134,25 +155,42 @@ namespace Texel
 
         MeshRenderer[] _BuildRendererList(GameObject[] objects)
         {
+            MeshRenderer[][] meshLists = new MeshRenderer[objects.Length][];
             int count = 0;
-            MeshRenderer[] rlist = new MeshRenderer[objects.Length];
+
             for (int i = 0; i < objects.Length; i++)
             {
                 GameObject obj = objects[i];
-                if (Utilities.IsValid(obj))
+                if (!obj)
+                    continue;
+
+                if (searchChildren)
                 {
-                    rlist[i] = obj.GetComponent<MeshRenderer>();
+                    meshLists[i] = obj.GetComponentsInChildren<MeshRenderer>(true);
+                    count += meshLists[i].Length;
+                    continue;
+                }
+
+                MeshRenderer render = obj.GetComponent<MeshRenderer>();
+                if (render)
+                {
+                    meshLists[i] = new MeshRenderer[1];
+                    meshLists[i][0] = render;
                     count += 1;
                 }
             }
 
             int index = 0;
             MeshRenderer[] renderers = new MeshRenderer[count];
-            for (int i = 0; i < rlist.Length; i++)
+            for (int i = 0; i < meshLists.Length; i++)
             {
-                if (rlist[i])
+                MeshRenderer[] list = meshLists[i];
+                if (list == null)
+                    continue;
+
+                for (int j = 0; j < list.Length; j++)
                 {
-                    renderers[index] = rlist[i];
+                    renderers[index] = list[j];
                     index += 1;
                 }
             }
