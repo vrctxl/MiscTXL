@@ -34,9 +34,16 @@ namespace Texel
 
         [Header("Options")]
         [SerializeField] internal bool searchChildren = false;
+        [Tooltip("Any GameObjects disabled at initialization will be ignored for future state change.")]
+        [SerializeField] internal bool ignoreDisabledObjects = false;
+        [Tooltip("Any components disabled at initialization will be ignored for future state change.")]
+        [SerializeField] internal bool ignoreDisabledComponents = false;
 
         private bool state = false;
         private bool inDefault = false;
+
+        private GameObject[] onObjects;
+        private GameObject[] offObjects;
 
         private Collider[] onColliders;
         private Collider[] offColliders;
@@ -57,6 +64,12 @@ namespace Texel
         protected override void _Init()
         {
             base._Init();
+
+            if (toggleGameObject)
+            {
+                onObjects = _BuildObjectList(onStateObjects);
+                offObjects = _BuildObjectList(offStateObjects);
+            }
 
             if (toggleColliders)
             {
@@ -108,6 +121,36 @@ namespace Texel
             return defaultState;
         }
 
+        GameObject[] _BuildObjectList(GameObject[] objects)
+        {
+            int count = 0;
+            for (int i = 0; i < objects.Length; i++)
+            {
+                GameObject obj = objects[i];
+                if (!obj)
+                    continue;
+                if (ignoreDisabledObjects && !obj.activeSelf)
+                    continue;
+                count += 1;
+            }
+
+            int index = 0;
+            GameObject[] list = new GameObject[count];
+            for (int i = 0; i < objects.Length; i++)
+            {
+                GameObject obj = objects[i];
+                if (!obj)
+                    continue;
+                if (ignoreDisabledObjects && !obj.activeSelf)
+                    continue;
+
+                list[index] = obj;
+                index += 1;
+            }
+
+            return list;
+        }
+
         Collider[] _BuildColliderList(GameObject[] objects)
         {
             Collider[][] colliderLists = new Collider[objects.Length][];
@@ -116,18 +159,30 @@ namespace Texel
             for (int i = 0; i < objects.Length; i++)
             {
                 GameObject obj = objects[i];
-                if (!obj)
+                if (!obj || (ignoreDisabledObjects && !obj.activeSelf))
                     continue;
 
                 if (searchChildren)
                 {
-                    colliderLists[i] = obj.GetComponentsInChildren<Collider>(true);
+                    colliderLists[i] = obj.GetComponentsInChildren<Collider>(!ignoreDisabledObjects);
+                    if (ignoreDisabledComponents)
+                    {
+                        for (int j = 0; j < colliderLists[i].Length; j++)
+                        {
+                            if (!colliderLists[i][j].enabled)
+                                colliderLists[i][j] = null;
+                        }
+                        colliderLists[i] = (Collider[])UtilityTxl.ArrayCompact(colliderLists[i]);
+                        if (colliderLists[i] == null)
+                            colliderLists[i] = new Collider[0];
+                    }
+
                     count += colliderLists[i].Length;
                     continue;
                 }
 
                 Collider collider = obj.GetComponent<Collider>();
-                if (collider)
+                if (collider && (!ignoreDisabledComponents || collider.enabled))
                 {
                     colliderLists[i] = new Collider[1];
                     colliderLists[i][0] = collider;
@@ -161,18 +216,30 @@ namespace Texel
             for (int i = 0; i < objects.Length; i++)
             {
                 GameObject obj = objects[i];
-                if (!obj)
+                if (!obj || (ignoreDisabledObjects && !obj.activeSelf))
                     continue;
 
                 if (searchChildren)
                 {
-                    meshLists[i] = obj.GetComponentsInChildren<MeshRenderer>(true);
+                    meshLists[i] = obj.GetComponentsInChildren<MeshRenderer>(!ignoreDisabledObjects);
+                    if (ignoreDisabledComponents)
+                    {
+                        for (int j = 0; j < meshLists[i].Length; j++)
+                        {
+                            if (!meshLists[i][j].enabled)
+                                meshLists[i][j] = null;
+                        }
+                        meshLists[i] = (MeshRenderer[])UtilityTxl.ArrayCompact(meshLists[i]);
+                        if (meshLists[i] == null)
+                            meshLists[i] = new MeshRenderer[0];
+                    }
+
                     count += meshLists[i].Length;
                     continue;
                 }
 
                 MeshRenderer render = obj.GetComponent<MeshRenderer>();
-                if (render)
+                if (render && (!ignoreDisabledComponents || render.enabled))
                 {
                     meshLists[i] = new MeshRenderer[1];
                     meshLists[i][0] = render;
@@ -258,18 +325,18 @@ namespace Texel
 
             if (toggleGameObject)
             {
-                if (Utilities.IsValid(onStateObjects))
+                if (Utilities.IsValid(onObjects))
                 {
-                    foreach (var obj in onStateObjects)
+                    foreach (var obj in onObjects)
                     {
                         if (Utilities.IsValid(obj))
                             obj.SetActive(state);
                     }
                 }
 
-                if (Utilities.IsValid(offStateObjects))
+                if (Utilities.IsValid(offObjects))
                 {
-                    foreach (var obj in offStateObjects)
+                    foreach (var obj in offObjects)
                     {
                         if (Utilities.IsValid(obj))
                             obj.SetActive(!state);

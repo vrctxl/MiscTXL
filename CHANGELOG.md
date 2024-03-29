@@ -1,5 +1,9 @@
 # Changelog
 
+## [1.0.3] - 03-28-24
+
+- Added "Ignore Disabled Objects" and "Ignore Disabled Colliders" options to GroupToggle
+
 ## [1.0.2] - 02-13-24
 
 - Added "Search Children" option to GroupToggle
