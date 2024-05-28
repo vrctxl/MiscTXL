@@ -270,6 +270,9 @@ namespace Texel
             get { return state; }
             set
             {
+                if (enforceOnToggle && accessControl && !accessControl._LocalHasAccess())
+                    return;
+
                 if (state != value)
                 {
                     state = value;
@@ -280,25 +283,16 @@ namespace Texel
 
         public void _Toggle()
         {
-            if (enforceOnToggle && accessControl && !accessControl._LocalHasAccess())
-                return;
-
             State = !State;
         }
 
         public void _ToggleOn()
         {
-            if (enforceOnToggle && accessControl && !accessControl._LocalHasAccess())
-                return;
-
             State = true;
         }
 
         public void _ToggleOff()
         {
-            if (enforceOnToggle && accessControl && !accessControl._LocalHasAccess())
-                return;
-
             State = false;
         }
 

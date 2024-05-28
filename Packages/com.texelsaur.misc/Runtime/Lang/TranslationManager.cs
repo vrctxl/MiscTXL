@@ -13,6 +13,7 @@ namespace Texel
     {
         public TranslationManager parentManager;
         public TranslationTable translationTable;
+        public bool loadFromSystem = true;
 
         public Text[] textTargets;
         public string[] textKeys;
@@ -24,7 +25,8 @@ namespace Texel
         public GameObject[] behaviorTargets;
         public string[] behaviorInteractKeys;
 
-        int selectedLang = 0;
+        private TranslationManager rootManager;
+        private int selectedLang = 0;
 
         public const int EVENT_LANG_CHANGED = 0;
         const int EVENT_COUNT = 1;
@@ -38,18 +40,35 @@ namespace Texel
 
         protected override void _Init()
         {
+            rootManager = this;
             if (parentManager)
             {
-                translationTable = parentManager.translationTable;
-                parentManager._Register(EVENT_LANG_CHANGED, this, nameof(_OnParentLangChanged));
+                for (int i = 0; i < 10; i++)
+                {
+                    rootManager = rootManager.parentManager;
+                    if (!rootManager.parentManager)
+                        break;
+                }
+
+                translationTable = rootManager.translationTable;
+                rootManager._Register(EVENT_LANG_CHANGED, this, nameof(_OnParentLangChanged));
             }
 
-            _SelectLang(0);
+            int lang = 0;
+            if (loadFromSystem)
+            {
+                int sysLang = translationTable._GetLangBySystem();
+                if (sysLang > -1)
+                    lang = sysLang;
+            }
+
+            _SelectLang(lang);
         }
 
         public void _OnParentLangChanged()
         {
-            _SelectLang(parentManager.SelectedLang);
+            selectedLang = rootManager.selectedLang;
+            _UpdateLang();
         }
 
         public int SelectedLang
@@ -63,16 +82,29 @@ namespace Texel
 
         public void _SelectLang(int id)
         {
+            if (!rootManager)
+                return;
+
+            rootManager._RootSelectLang(id);
+        }
+
+        public void _RootSelectLang(int id)
+        {
             if (id < 0 || id >= translationTable.languages.Length)
                 return;
 
             selectedLang = id;
+            Debug.Log($"Selected lang {id}");
 
+            _UpdateHandlers(EVENT_LANG_CHANGED);
+            _UpdateLang();
+        }
+
+        void _UpdateLang()
+        {
             _ApplyTextTranslations();
             _ApplyPickupTranslations();
             _ApplyBehaviorTranslations();
-
-            _UpdateHandlers(EVENT_LANG_CHANGED);
         }
 
         void _ApplyTextTranslations()

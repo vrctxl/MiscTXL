@@ -12,6 +12,7 @@ namespace Texel
 
         SerializedProperty parentManagerProperty;
         SerializedProperty translationTableProperty;
+        SerializedProperty loadFromSystemProperty;
 
         SerializedProperty textKeysProperty;
         SerializedProperty textTargetsProperty;
@@ -25,6 +26,7 @@ namespace Texel
         {
             parentManagerProperty = serializedObject.FindProperty(nameof(TranslationManager.parentManager));
             translationTableProperty = serializedObject.FindProperty(nameof(TranslationManager.translationTable));
+            loadFromSystemProperty = serializedObject.FindProperty(nameof(TranslationManager.loadFromSystem));
 
             textKeysProperty = serializedObject.FindProperty(nameof(TranslationManager.textKeys));
             textTargetsProperty = serializedObject.FindProperty(nameof(TranslationManager.textTargets));
@@ -42,6 +44,7 @@ namespace Texel
 
             EditorGUILayout.PropertyField(parentManagerProperty);
             EditorGUILayout.PropertyField(translationTableProperty);
+            EditorGUILayout.PropertyField(loadFromSystemProperty);
 
             TargetFoldout("Text Entries", textTargetsProperty, textKeysProperty);
             EditorGUILayout.Space();

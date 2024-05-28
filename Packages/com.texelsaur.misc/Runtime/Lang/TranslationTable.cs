@@ -1,6 +1,7 @@
 ﻿using UdonSharp;
 using UnityEngine;
 using VRC.SDK3.Data;
+using VRC.SDKBase;
 
 namespace Texel
 {
@@ -8,11 +9,13 @@ namespace Texel
     public class TranslationTable : UdonSharpBehaviour
     {
         public string[] languages;
+        public string[] languageCodes;
         public TextAsset[] languageJson;
         public string[] keys;
         public string[] values;
 
         DataDictionary[] keystores;
+        DataDictionary codestore;
 
         bool init = false;
 
@@ -32,6 +35,7 @@ namespace Texel
 
         protected virtual void _Init()
         {
+            codestore = new DataDictionary();
             keystores = new DataDictionary[languages.Length];
             for (int i = 0; i < keystores.Length; i++)
             {
@@ -40,6 +44,7 @@ namespace Texel
                     store = getLangDictionary(languageJson[i].text);
 
                 keystores[i] = store;
+                codestore.SetValue(languageCodes[i], i);
 
                 for (int j = 0; i < keys.Length; i++)
                     _AddToDictionary(i, j);
@@ -57,6 +62,21 @@ namespace Texel
             }
 
             return new DataDictionary();
+        }
+
+        public int _GetLangBySystem()
+        {
+            _EnsureInit();
+
+            string code = VRCPlayerApi.GetCurrentLanguage();
+            if (codestore.TryGetValue(code, out DataToken val))
+                return val.Int;
+
+            string[] parts = code.Split('-');
+            if (parts.Length > 1 && codestore.TryGetValue(parts[0], out DataToken val2))
+                return val2.Int;
+
+            return -1;
         }
 
         public string _GetValue(int langIndex, string key)

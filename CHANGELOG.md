@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.0.4] - 05-27-24
+
+- Added access check to GroupToggle State property
+- Added language detect to translation
+
 ## [1.0.3] - 03-28-24
 
 - Added "Ignore Disabled Objects" and "Ignore Disabled Colliders" options to GroupToggle

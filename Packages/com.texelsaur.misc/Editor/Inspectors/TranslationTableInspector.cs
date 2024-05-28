@@ -12,6 +12,7 @@ namespace Texel
         static bool _showStringFoldout;
 
         SerializedProperty languagesProperty;
+        SerializedProperty languageCodesProperty;
         SerializedProperty languagesJsonProperty;
         SerializedProperty keysProperty;
         SerializedProperty valuesProperty;
@@ -19,6 +20,7 @@ namespace Texel
         private void OnEnable()
         {
             languagesProperty = serializedObject.FindProperty(nameof(TranslationTable.languages));
+            languageCodesProperty = serializedObject.FindProperty(nameof(TranslationTable.languageCodes));
             languagesJsonProperty = serializedObject.FindProperty(nameof(TranslationTable.languageJson));
             keysProperty = serializedObject.FindProperty(nameof(TranslationTable.keys));
             valuesProperty = serializedObject.FindProperty(nameof(TranslationTable.values));
@@ -53,9 +55,11 @@ namespace Texel
                     if (i >= oldCount)
                         langProp.stringValue = "";
 
+                    SerializedProperty langCode = languageCodesProperty.GetArrayElementAtIndex(i);
                     SerializedProperty langJsonProp = languagesJsonProperty.GetArrayElementAtIndex(i);
 
                     EditorGUILayout.PropertyField(langProp, new GUIContent("Language"));
+                    EditorGUILayout.PropertyField(langCode, new GUIContent("Language Code"));
                     EditorGUILayout.PropertyField(langJsonProp, new GUIContent("JSON"));
                     EditorGUILayout.Space();
                 }
@@ -121,6 +125,7 @@ namespace Texel
             }
 
             languagesProperty.arraySize = newSize;
+            languageCodesProperty.arraySize = newSize;
             languagesJsonProperty.arraySize = newSize;
             valuesProperty.arraySize = languagesProperty.arraySize * keysProperty.arraySize;
 
