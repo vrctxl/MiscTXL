@@ -32,6 +32,12 @@ namespace Texel
             hasTargetVariable = Utilities.IsValid(targetBehavior) && playerTargetVariable != null && playerTargetVariable != "";
         }
 
+        public void _UseStation(VRCPlayerApi player)
+        {
+            if (Utilities.IsValid(player))
+                player.UseAttachedStation();
+        }
+
         public override void OnStationEntered(VRCPlayerApi player)
         {
             if (!hasPlayerEnter)

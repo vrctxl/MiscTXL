@@ -12,44 +12,44 @@ namespace Texel
     {
         [Header("Access Control")]
         [Tooltip("Optional.  Enables default-on states for local user only if they have access via the referenced ACL at world load.")]
-        [SerializeField] internal AccessControl accessControl;
+        [SerializeField] protected internal AccessControl accessControl;
         [Tooltip("Optional.  Enables default-on states when an ACL updates to give local user access that they did not have at world load.")]
-        [SerializeField] internal bool initOnAccessUpadte = true;
+        [SerializeField] protected internal bool initOnAccessUpadte = true;
         [Tooltip("Optional.  Disables the ability to toggle group to 'on' state if local user does not have access via the referenced ACL.")]
-        [SerializeField] internal bool enforceOnToggle = true;
+        [SerializeField] protected internal bool enforceOnToggle = true;
 
         [Header("Default State")]
-        [SerializeField] internal bool defaultVR = true;
-        [SerializeField] internal bool defaultDesktop = true;
-        [SerializeField] internal bool defaultQuest = true;
+        [SerializeField] protected internal bool defaultVR = true;
+        [SerializeField] protected internal bool defaultDesktop = true;
+        [SerializeField] protected internal bool defaultQuest = true;
 
         [Header("Objects")]
-        [SerializeField] internal GameObject[] onStateObjects;
-        [SerializeField] internal GameObject[] offStateObjects;
+        [SerializeField] protected internal GameObject[] onStateObjects;
+        [SerializeField] protected internal GameObject[] offStateObjects;
 
         [Header("Toggle Attributes")]
-        [SerializeField] internal bool toggleGameObject = true;
-        [SerializeField] internal bool toggleColliders = false;
-        [SerializeField] internal bool toggleRenderers = false;
+        [SerializeField] protected internal bool toggleGameObject = true;
+        [SerializeField] protected internal bool toggleColliders = false;
+        [SerializeField] protected internal bool toggleRenderers = false;
 
         [Header("Options")]
-        [SerializeField] internal bool searchChildren = false;
+        [SerializeField] protected internal bool searchChildren = false;
         [Tooltip("Any GameObjects disabled at initialization will be ignored for future state change.")]
-        [SerializeField] internal bool ignoreDisabledObjects = false;
+        [SerializeField] protected internal bool ignoreDisabledObjects = false;
         [Tooltip("Any components disabled at initialization will be ignored for future state change.")]
-        [SerializeField] internal bool ignoreDisabledComponents = false;
+        [SerializeField] protected internal bool ignoreDisabledComponents = false;
 
         private bool state = false;
         private bool inDefault = false;
 
-        private GameObject[] onObjects;
-        private GameObject[] offObjects;
+        protected GameObject[] onObjects;
+        protected GameObject[] offObjects;
 
-        private Collider[] onColliders;
-        private Collider[] offColliders;
+        protected Collider[] onColliders;
+        protected Collider[] offColliders;
 
-        private MeshRenderer[] onRenderers;
-        private MeshRenderer[] offRenderers;
+        protected MeshRenderer[] onRenderers;
+        protected MeshRenderer[] offRenderers;
 
         public const int EVENT_TOGGLED = 0;
         const int EVENT_COUNT = 1;
@@ -108,7 +108,7 @@ namespace Texel
             }
         }
 
-        bool _DefaultState()
+        protected bool _DefaultState()
         {
             bool defaultState = defaultDesktop;
             if (Networking.LocalPlayer.IsUserInVR())
@@ -296,7 +296,7 @@ namespace Texel
             State = false;
         }
 
-        void _ToggleInternal(bool val)
+        protected void _ToggleInternal(bool val)
         {
             state = val;
             inDefault = false;

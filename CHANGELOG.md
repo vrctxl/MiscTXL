@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.0.5] - 03-28-25
+
+- Changed most internal access of GroupToggle to protected
+- Added _UseStation method to StationTrigger
+
 ## [1.0.4] - 05-27-24
 
 - Added access check to GroupToggle State property

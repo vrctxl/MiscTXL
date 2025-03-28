@@ -6,7 +6,7 @@
     "email": "",
     "url": "https://texelsaurus.com"
   },
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "Collection of assorted useful scripts including toggles, triggers, language management, material management.",
   "gitDependencies": {},
   "vpmDependencies": {
