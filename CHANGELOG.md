@@ -1,5 +1,9 @@
 # Changelog
 
+## [1.0.6] - 06-09-26
+- Added enforceOnAccessUpdate (default true) to GroupToggle, to force state off if access is removed
+- Updated defaultQuest option on GroupToggle to also apply to IOS clients
+
 ## [1.0.5] - 03-28-25
 
 - Changed most internal access of GroupToggle to protected

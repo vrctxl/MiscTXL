@@ -15,12 +15,15 @@ namespace Texel
         [SerializeField] protected internal AccessControl accessControl;
         [Tooltip("Optional.  Enables default-on states when an ACL updates to give local user access that they did not have at world load.")]
         [SerializeField] protected internal bool initOnAccessUpadte = true;
+        [Tooltip("Optional.  Forces state 'off' if local user access is lost, regardless of what current state is.")]
+        [SerializeField] protected internal bool enforceOnAccessUpdate = true;
         [Tooltip("Optional.  Disables the ability to toggle group to 'on' state if local user does not have access via the referenced ACL.")]
         [SerializeField] protected internal bool enforceOnToggle = true;
 
         [Header("Default State")]
         [SerializeField] protected internal bool defaultVR = true;
         [SerializeField] protected internal bool defaultDesktop = true;
+        [Tooltip("Defaults on if client is mobile (Quest or IOS)")]
         [SerializeField] protected internal bool defaultQuest = true;
 
         [Header("Objects")]
@@ -101,11 +104,11 @@ namespace Texel
 
         public void _OnValidate()
         {
-            if (inDefault && accessControl._LocalHasAccess())
-            {
+            bool hasAccess = accessControl._LocalHasAccess();
+            if (inDefault && hasAccess)
                 _ToggleInternal(_DefaultState());
-                inDefault = true;
-            }
+            else if (enforceOnAccessUpdate && !hasAccess && state)
+                _ToggleInternal(false);
         }
 
         protected bool _DefaultState()
@@ -114,7 +117,7 @@ namespace Texel
             if (Networking.LocalPlayer.IsUserInVR())
                 defaultState = defaultVR;
 
-#if UNITY_ANDROID
+#if UNITY_ANDROID || UNITY_IOS
             defaultState = defaultQuest;
 #endif
 
