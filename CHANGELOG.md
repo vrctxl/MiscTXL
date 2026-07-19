@@ -1,6 +1,13 @@
 # Changelog
 
+## [2.0.0] - 07-19-26
+
+- BREAKING: Package is deprecated and should be removed
+  - Any scripts in use not merged into CommonTXL should be copied into project assets
+- BREAKING: Moved GroupToggle, Translation scripts, extra triggers into CommonTXL
+
 ## [1.0.6] - 06-09-26
+
 - Added enforceOnAccessUpdate (default true) to GroupToggle, to force state off if access is removed
 - Updated defaultQuest option on GroupToggle to also apply to IOS clients
 
